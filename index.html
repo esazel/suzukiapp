@@ -1,45 +1,105 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suzuki Celaya | Dashboard de Servicio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-gray-100 p-6">
-    <div class="max-w-4xl mx-auto">
-        <h1 class="text-3xl font-bold text-red-600 mb-6">Suzuki Celaya | Dashboard</h1>
-        
-        <div class="bg-white p-6 rounded-xl shadow-md mb-8">
-            <h2 class="text-lg font-bold mb-4">Nueva Cita (Registro en Sheets)</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input id="nombre" placeholder="Nombre" class="p-2 border rounded">
-                <input id="telefono" placeholder="Teléfono" class="p-2 border rounded">
-                <select id="modelo" class="p-2 border rounded">
-                    <option>Swift</option><option>Ignis</option><option>Grand Vitara</option>
-                </select>
-                <textarea id="mensaje" placeholder="Mensaje..." class="p-2 border rounded"></textarea>
-            </div>
-            <button onclick="enviar()" class="mt-4 bg-red-600 text-white px-6 py-2 rounded">Guardar en Sheets</button>
+<body class="bg-gray-50 text-gray-900">
+    <!-- Navegación -->
+    <nav class="bg-red-600 p-4 text-white shadow-lg">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold">Suzuki Celaya | Panel de Gestión</h1>
         </div>
+    </nav>
 
-        <div class="bg-white p-6 rounded-xl shadow-md">
-            <canvas id="chart"></canvas>
+    <main class="max-w-6xl mx-auto p-4 md:p-8">
+        <!-- Grid de Gráficas Ampliado -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                <h2 class="text-lg font-bold mb-4 text-gray-700">Citas por Modelo</h2>
+                <canvas id="citasChart" height="200"></canvas>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                <h2 class="text-lg font-bold mb-4 text-gray-700">Eficiencia de Servicio</h2>
+                <canvas id="eficienciaChart" height="200"></canvas>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                <h2 class="text-lg font-bold mb-4 text-gray-700">Satisfacción del Cliente (%)</h2>
+                <canvas id="satisfaccionChart" height="200"></canvas>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                <h2 class="text-lg font-bold mb-4 text-gray-700">Desempeño de Áreas</h2>
+                <canvas id="desempenoChart" height="200"></canvas>
+            </div>
+            <!-- Nuevas gráficas -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                <h2 class="text-lg font-bold mb-4 text-gray-700">Ventas Mensuales (Unidades)</h2>
+                <canvas id="ventasChart" height="200"></canvas>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                <h2 class="text-lg font-bold mb-4 text-gray-700">Distribución de Entrega</h2>
+                <canvas id="entregaChart" height="200"></canvas>
+            </div>
         </div>
-    </div>
+    </main>
 
     <script>
-        function enviar() {
-            var datos = {
-                nombre: document.getElementById('nombre').value,
-                telefono: document.getElementById('telefono').value,
-                modelo: document.getElementById('modelo').value,
-                mensaje: document.getElementById('mensaje').value
-            };
-            google.script.run.withSuccessHandler(() => alert('Guardado')).registrarCita(datos);
-        }
-
-        new Chart(document.getElementById('chart'), {
+        // Citas por Modelo
+        new Chart(document.getElementById('citasChart'), {
             type: 'bar',
-            data: { labels: ['Swift', 'Ignis', 'Vitara'], datasets: [{ label: 'Citas', data: [12, 19, 3], backgroundColor: '#e11d48' }] }
+            data: {
+                labels: ['Swift', 'Ignis', 'Vitara', 'S-Cross'],
+                datasets: [{ label: 'Citas', data: [12, 19, 3, 5], backgroundColor: '#dc2626' }]
+            }
+        });
+
+        // Eficiencia de Servicio
+        new Chart(document.getElementById('eficienciaChart'), {
+            type: 'line',
+            data: {
+                labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie'],
+                datasets: [{ label: 'Unidades atendidas', data: [5, 8, 3, 7, 9], borderColor: '#2563eb', tension: 0.4 }]
+            }
+        });
+
+        // Satisfacción del Cliente (Pie)
+        new Chart(document.getElementById('satisfaccionChart'), {
+            type: 'pie',
+            data: {
+                labels: ['Excelente', 'Bueno', 'Regular'],
+                datasets: [{ data: [70, 20, 10], backgroundColor: ['#16a34a', '#ca8a04', '#dc2626'] }]
+            }
+        });
+
+        // Desempeño de Áreas (Radar)
+        new Chart(document.getElementById('desempenoChart'), {
+            type: 'radar',
+            data: {
+                labels: ['Ventas', 'Servicio', 'Refacciones', 'Atención', 'Garantía'],
+                datasets: [{ label: 'Puntaje', data: [85, 92, 78, 95, 88], backgroundColor: 'rgba(220, 38, 38, 0.2)', borderColor: '#dc2626' }]
+            }
+        });
+
+        // Ventas Mensuales (Barras Horizontales)
+        new Chart(document.getElementById('ventasChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May'],
+                datasets: [{ label: 'Ventas', data: [45, 52, 48, 60, 55], backgroundColor: '#f59e0b' }]
+            },
+            options: { indexAxis: 'y' }
+        });
+
+        // Distribución de Entrega (Polar)
+        new Chart(document.getElementById('entregaChart'), {
+            type: 'polarArea',
+            data: {
+                labels: ['A tiempo', 'Retraso leve', 'Retraso crítico'],
+                datasets: [{ data: [80, 15, 5], backgroundColor: ['#3b82f6', '#fbbf24', '#ef4444'] }]
+            }
         });
     </script>
 </body>
