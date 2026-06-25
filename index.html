@@ -3,24 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suzuki Celaya Dashboard</title>
+    <title>Suzuki Celaya | Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 p-8">
-    <div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
-        <h1 class="text-2xl font-bold mb-4">Suzuki Celaya Dashboard</h1>
-        <input type="text" id="phone" placeholder="Número de teléfono" class="w-full p-2 border rounded mb-2">
-        <textarea id="message" placeholder="Mensaje" class="w-full p-2 border rounded mb-2"></textarea>
-        <button onclick="generateLink()" class="bg-red-600 text-white w-full py-2 rounded">Generar Link</button>
-        <div id="result" class="mt-4 p-2 bg-gray-200 text-sm break-all"></div>
+<body class="bg-gray-50 min-h-screen p-4 md:p-8">
+    <div class="max-w-4xl mx-auto">
+        <header class="mb-8">
+            <h1 class="text-3xl font-bold text-red-600">Suzuki Celaya</h1>
+            <p class="text-gray-600">Panel de Gestión de Servicio y Ventas</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div class="bg-white p-4 rounded-lg shadow border-l-4 border-red-500">
+                <h2 class="text-sm text-gray-500 uppercase">Citas Hoy</h2>
+                <p class="text-2xl font-bold">12</p>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow border-l-4 border-blue-500">
+                <h2 class="text-sm text-gray-500 uppercase">Unidades en Servicio</h2>
+                <p class="text-2xl font-bold">5</p>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow border-l-4 border-green-500">
+                <h2 class="text-sm text-gray-500 uppercase">Promo Activa</h2>
+                <p class="text-lg font-bold">Balanceo Gratis</p>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold mb-4">Generador de Enlaces (Excel Ready)</h2>
+            <input type="text" id="phone" placeholder="Número (ej. 4611234567)" class="w-full p-2 border rounded mb-2">
+            <textarea id="message" oninput="updateCount()" placeholder="Mensaje para el cliente..." class="w-full p-2 border rounded mb-2 h-24"></textarea>
+            <div class="flex justify-between items-center mb-4">
+                <span id="charCount" class="text-sm text-gray-500">0 / 255 caracteres</span>
+                <button onclick="generateLink()" class="bg-red-600 text-white px-6 py-2 rounded font-bold hover:bg-red-700">Generar Link</button>
+            </div>
+            <div id="result" class="p-3 bg-gray-100 rounded text-sm break-all font-mono"></div>
+        </div>
     </div>
 
     <script>
+        function updateCount() {
+            const msg = document.getElementById('message').value;
+            const count = msg.length;
+            const counter = document.getElementById('charCount');
+            counter.innerText = `${count} / 255 caracteres`;
+            counter.className = count > 255 ? "text-sm text-red-600 font-bold" : "text-sm text-gray-500";
+        }
+
         function generateLink() {
             const phone = document.getElementById('phone').value;
-            const message = document.getElementById('message').value;
-            const link = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-            document.getElementById('result').innerText = link.length > 255 ? "Error: Más de 255 caracteres" : link;
+            const msg = document.getElementById('message').value;
+            const link = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+            
+            const resultDiv = document.getElementById('result');
+            if (link.length > 255) {
+                resultDiv.innerHTML = `<span class="text-red-600">Error: El link tiene ${link.length} caracteres. Excede el límite de 255.</span>`;
+            } else {
+                resultDiv.innerText = link;
+            }
         }
     </script>
 </body>
