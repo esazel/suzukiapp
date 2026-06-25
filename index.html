@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suzuki Celaya Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
+        <h1 class="text-2xl font-bold mb-4">Suzuki Celaya Dashboard</h1>
+        <input type="text" id="phone" placeholder="Número de teléfono" class="w-full p-2 border rounded mb-2">
+        <textarea id="message" placeholder="Mensaje" class="w-full p-2 border rounded mb-2"></textarea>
+        <button onclick="generateLink()" class="bg-red-600 text-white w-full py-2 rounded">Generar Link</button>
+        <div id="result" class="mt-4 p-2 bg-gray-200 text-sm break-all"></div>
+    </div>
+
+    <script>
+        function generateLink() {
+            const phone = document.getElementById('phone').value;
+            const message = document.getElementById('message').value;
+            const link = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+            document.getElementById('result').innerText = link.length > 255 ? "Error: Más de 255 caracteres" : link;
+        }
+    </script>
+</body>
+</html>
