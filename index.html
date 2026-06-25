@@ -1,76 +1,46 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suzuki Celaya | Admin Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-gray-100 font-sans">
-    <nav class="bg-red-600 p-4 text-white shadow-lg">
-        <h1 class="text-xl font-bold">Suzuki Celaya | Dashboard</h1>
-    </nav>
-
-    <div class="p-4 md:p-8 max-w-6xl mx-auto">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div class="bg-white p-6 rounded-xl shadow-sm">
-                <h2 class="text-lg font-bold mb-4">Citas por Modelo</h2>
-                <canvas id="myChart"></canvas>
+<body class="bg-gray-100 p-6">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-red-600 mb-6">Suzuki Celaya | Dashboard</h1>
+        
+        <div class="bg-white p-6 rounded-xl shadow-md mb-8">
+            <h2 class="text-lg font-bold mb-4">Nueva Cita (Registro en Sheets)</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input id="nombre" placeholder="Nombre" class="p-2 border rounded">
+                <input id="telefono" placeholder="Teléfono" class="p-2 border rounded">
+                <select id="modelo" class="p-2 border rounded">
+                    <option>Swift</option><option>Ignis</option><option>Grand Vitara</option>
+                </select>
+                <textarea id="mensaje" placeholder="Mensaje..." class="p-2 border rounded"></textarea>
             </div>
-            <div class="bg-white p-6 rounded-xl shadow-sm">
-                <h2 class="text-lg font-bold mb-4">Eficiencia de Servicio</h2>
-                <canvas id="serviceChart"></canvas>
-            </div>
+            <button onclick="enviar()" class="mt-4 bg-red-600 text-white px-6 py-2 rounded">Guardar en Sheets</button>
         </div>
 
-        <div class="bg-white p-6 rounded-xl shadow-sm">
-            <h2 class="text-xl font-bold mb-4">Generador de WhatsApp</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input type="text" id="phone" placeholder="Número de Cliente" class="p-3 border rounded-lg">
-                <textarea id="message" oninput="updateCount()" placeholder="Mensaje..." class="p-3 border rounded-lg h-24"></textarea>
-            </div>
-            <div class="mt-4 flex justify-between items-center">
-                <span id="charCount" class="text-sm font-bold">0 / 255</span>
-                <button onclick="generateLink()" class="bg-red-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-red-700">Generar</button>
-            </div>
-            <div id="result" class="mt-4 p-4 bg-gray-50 border rounded-lg break-all font-mono text-sm"></div>
+        <div class="bg-white p-6 rounded-xl shadow-md">
+            <canvas id="chart"></canvas>
         </div>
     </div>
 
     <script>
-        // Configuración Gráficas
-        const ctx = document.getElementById('myChart').getContext('2d');
-        new Chart(ctx, {
+        function enviar() {
+            var datos = {
+                nombre: document.getElementById('nombre').value,
+                telefono: document.getElementById('telefono').value,
+                modelo: document.getElementById('modelo').value,
+                mensaje: document.getElementById('mensaje').value
+            };
+            google.script.run.withSuccessHandler(() => alert('Guardado')).registrarCita(datos);
+        }
+
+        new Chart(document.getElementById('chart'), {
             type: 'bar',
-            data: {
-                labels: ['Swift', 'Ignis', 'Vitara', 'S-Cross'],
-                datasets: [{ label: 'Citas', data: [12, 19, 3, 5], backgroundColor: '#e11d48' }]
-            }
+            data: { labels: ['Swift', 'Ignis', 'Vitara'], datasets: [{ label: 'Citas', data: [12, 19, 3], backgroundColor: '#e11d48' }] }
         });
-
-        const ctx2 = document.getElementById('serviceChart').getContext('2d');
-        new Chart(ctx2, {
-            type: 'line',
-            data: {
-                labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie'],
-                datasets: [{ label: 'Unidades', data: [5, 8, 3, 7, 9], borderColor: '#2563eb', fill: true }]
-            }
-        });
-
-        // Lógica WhatsApp
-        function updateCount() {
-            const count = document.getElementById('message').value.length;
-            document.getElementById('charCount').innerText = `${count} / 255`;
-            document.getElementById('charCount').className = count > 255 ? "text-sm text-red-600 font-bold" : "text-sm text-gray-500 font-bold";
-        }
-
-        function generateLink() {
-            const phone = document.getElementById('phone').value;
-            const msg = document.getElementById('message').value;
-            const link = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
-            document.getElementById('result').innerText = link.length > 255 ? "Error: Excede 255 caracteres" : link;
-        }
     </script>
 </body>
 </html>
