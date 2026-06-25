@@ -12,16 +12,17 @@
     <div class="max-w-7xl mx-auto">
         <header class="mb-8">
             <h1 class="text-3xl font-bold text-gray-800">Dashboard de Servicio</h1>
-            <p class="text-gray-600">Selecciona el mes para ver el detalle</p>
+            <p class="text-gray-600">Selecciona el mes o categoría para ver el detalle</p>
         </header>
 
-        <div id="tabs" class="flex space-x-2 mb-6 border-b border-gray-300">
-            <!-- Los botones se generarán dinámicamente -->
+        <!-- Navegación por pestañas -->
+        <div id="tabs" class="flex space-x-2 mb-6 border-b border-gray-300 overflow-x-auto">
+            <!-- Los botones se generan dinámicamente -->
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div class="bg-white p-6 rounded-lg shadow-sm border-l-4 border-blue-500">
-                <p class="text-sm text-gray-500 uppercase" id="label-total">Total Servicios</p>
+                <p class="text-sm text-gray-500 uppercase" id="label-total">Total</p>
                 <p class="text-3xl font-bold text-gray-800" id="total-servicios">--</p>
             </div>
             <div class="bg-white p-6 rounded-lg shadow-sm border-l-4 border-green-500">
@@ -48,24 +49,32 @@
             "Mayo": { total: 110, completados: 85, pendientes: 25 },
             "Abril": { total: 130, completados: 120, pendientes: 10 },
             "FACTURACIÓN": { total: 50000, completados: 42000, pendientes: 8000 }
+            // Puedes añadir nuevos meses aquí siguiendo el formato anterior
         };
 
         let chartInstance = null;
+        const ctx = document.getElementById('chartEstado').getContext('2d');
 
         function renderDashboard(mes) {
             const data = datosPorMes[mes];
-            
-            // Actualizar Etiquetas dinámicamente
             const esFacturacion = mes === 'FACTURACIÓN';
+
+            // Actualizar Etiquetas
             document.getElementById('label-total').textContent = esFacturacion ? 'Total Facturado' : 'Total Servicios';
             document.getElementById('label-ok').textContent = esFacturacion ? 'Cobrado' : 'Completados';
             document.getElementById('label-pendientes').textContent = esFacturacion ? 'Pendiente Cobro' : 'Pendientes';
 
-            // Actualizar KPIs
+            // Actualizar valores
             document.getElementById('total-servicios').textContent = esFacturacion ? `$${data.total.toLocaleString()}` : data.total;
             document.getElementById('servicios-ok').textContent = esFacturacion ? `$${data.completados.toLocaleString()}` : data.completados;
             document.getElementById('servicios-pendientes').textContent = esFacturacion ? `$${data.pendientes.toLocaleString()}` : data.pendientes;
 
+            // Destruir gráfico anterior si existe
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            // Crear nuevo gráfico
             chartInstance = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
@@ -75,7 +84,10 @@
                         backgroundColor: ['#10B981', '#EF4444']
                     }]
                 },
-                options: { responsive: true, maintainAspectRatio: false }
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false 
+                }
             });
         }
 
@@ -83,17 +95,19 @@
         Object.keys(datosPorMes).forEach((mes, index) => {
             const btn = document.createElement('button');
             btn.textContent = mes;
-            btn.className = `px-4 py-2 font-medium text-sm rounded-t-lg ${index === 0 ? 'bg-white border-x border-t border-gray-300' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'}`;
+            btn.className = `px-4 py-2 font-medium text-sm rounded-t-lg transition-colors ${index === 0 ? 'bg-white border-x border-t border-gray-300' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'}`;
+            
             btn.onclick = () => {
-                // Actualizar estilos
-                Array.from(tabsContainer.children).forEach(child => child.className = 'px-4 py-2 font-medium text-sm rounded-t-lg bg-gray-200 text-gray-600 hover:bg-gray-300');
+                Array.from(tabsContainer.children).forEach(child => {
+                    child.className = 'px-4 py-2 font-medium text-sm rounded-t-lg bg-gray-200 text-gray-600 hover:bg-gray-300';
+                });
                 btn.className = 'px-4 py-2 font-medium text-sm rounded-t-lg bg-white border-x border-t border-gray-300';
                 renderDashboard(mes);
             };
             tabsContainer.appendChild(btn);
         });
 
-        // Inicial
+        // Cargar vista inicial
         renderDashboard("Junio");
     </script>
 </body>
