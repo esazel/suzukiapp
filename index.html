@@ -21,15 +21,15 @@
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div class="bg-white p-6 rounded-lg shadow-sm border-l-4 border-blue-500">
-                <p class="text-sm text-gray-500 uppercase">Total Servicios</p>
+                <p class="text-sm text-gray-500 uppercase" id="label-total">Total Servicios</p>
                 <p class="text-3xl font-bold text-gray-800" id="total-servicios">--</p>
             </div>
             <div class="bg-white p-6 rounded-lg shadow-sm border-l-4 border-green-500">
-                <p class="text-sm text-gray-500 uppercase">Completados</p>
+                <p class="text-sm text-gray-500 uppercase" id="label-ok">Completados</p>
                 <p class="text-3xl font-bold text-gray-800" id="servicios-ok">--</p>
             </div>
             <div class="bg-white p-6 rounded-lg shadow-sm border-l-4 border-red-500">
-                <p class="text-sm text-gray-500 uppercase">Pendientes</p>
+                <p class="text-sm text-gray-500 uppercase" id="label-pendientes">Pendientes</p>
                 <p class="text-3xl font-bold text-gray-800" id="servicios-pendientes">--</p>
             </div>
         </div>
@@ -46,7 +46,8 @@
         const datosPorMes = {
             "Junio": { total: 125, completados: 98, pendientes: 27 },
             "Mayo": { total: 110, completados: 85, pendientes: 25 },
-            "Abril": { total: 130, completados: 120, pendientes: 10 }
+            "Abril": { total: 130, completados: 120, pendientes: 10 },
+            "FACTURACIÓN": { total: 50000, completados: 42000, pendientes: 8000 }
         };
 
         let chartInstance = null;
@@ -54,17 +55,16 @@
         function renderDashboard(mes) {
             const data = datosPorMes[mes];
             
-            // Actualizar KPIs
-            document.getElementById('total-servicios').textContent = data.total;
-            document.getElementById('servicios-ok').textContent = data.completados;
-            document.getElementById('servicios-pendientes').textContent = data.pendientes;
+            // Actualizar Etiquetas dinámicamente
+            const esFacturacion = mes === 'FACTURACIÓN';
+            document.getElementById('label-total').textContent = esFacturacion ? 'Total Facturado' : 'Total Servicios';
+            document.getElementById('label-ok').textContent = esFacturacion ? 'Cobrado' : 'Completados';
+            document.getElementById('label-pendientes').textContent = esFacturacion ? 'Pendiente Cobro' : 'Pendientes';
 
-            // Actualizar Gráfico
-            const ctx = document.getElementById('chartEstado').getContext('2d');
-            
-            if (chartInstance) {
-                chartInstance.destroy();
-            }
+            // Actualizar KPIs
+            document.getElementById('total-servicios').textContent = esFacturacion ? `$${data.total.toLocaleString()}` : data.total;
+            document.getElementById('servicios-ok').textContent = esFacturacion ? `$${data.completados.toLocaleString()}` : data.completados;
+            document.getElementById('servicios-pendientes').textContent = esFacturacion ? `$${data.pendientes.toLocaleString()}` : data.pendientes;
 
             chartInstance = new Chart(ctx, {
                 type: 'doughnut',
